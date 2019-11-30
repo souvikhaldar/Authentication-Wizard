@@ -14,5 +14,8 @@ func ValidateEmail(email string) bool {
 func Hash(password string) string {
 	h := sha1.New()
 	h.Write([]byte(password))
-	return fmt.Sprintf("%x", bs)
+	bs := h.Sum(nil)
+	hashOutput := fmt.Sprintf("%x", bs)
+	fmt.Println("SHA1 hash generated: ", hashOutput)
+	return hashOutput
 }
