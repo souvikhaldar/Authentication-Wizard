@@ -17,6 +17,6 @@ func Hash(password string) string {
 	h.Write([]byte(password))
 	bs := h.Sum(nil)
 	hashOutput := fmt.Sprintf("%x", bs)
-	fmt.Println("SHA1 hash generated: ", hashOutput)
 	return hashOutput
 }
+

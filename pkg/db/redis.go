@@ -14,6 +14,7 @@ type DB struct {
 	Redis *redis.Client
 }
 
+
 func (db *DB) AddUser(email string, password string) (string, error) {
 	signupToken := gorand.RandStr(5)
 	UserDetails := &UserDetails{

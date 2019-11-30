@@ -15,7 +15,5 @@ func IsRegistered(repo Repository, email, password string) bool {
 		log.Println(err)
 		return false
 	}
-
 	return signup.Hash(password) == p && s
-
 }
