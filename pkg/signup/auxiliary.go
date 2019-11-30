@@ -6,7 +6,8 @@ import (
 	"regexp"
 )
 
-func ValidateEmail(email string) bool {
+// IsValidEmail checks if the input email is in valid format
+func IsValidEmail(email string) bool {
 	var rxEmail = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 	return rxEmail.MatchString(email)
 }

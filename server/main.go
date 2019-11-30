@@ -9,11 +9,17 @@ import (
 	"github.com/go-redis/redis/v7"
 	"github.com/gorilla/mux"
 	"github.com/souvikhaldar/Authentication-Wizard/pkg/db"
+	"github.com/souvikhaldar/Authentication-Wizard/pkg/login"
+	"github.com/souvikhaldar/Authentication-Wizard/pkg/signup"
 )
 
 type httpServer struct {
 	DB     *db.DB
 	Router *mux.Router
+}
+type SignupBody struct {
+	EmailID  string `json:"email_id"`
+	Password string `json:"password"`
 }
 
 func (h *httpServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -38,11 +44,7 @@ func NewServer() *httpServer {
 }
 
 func (s *httpServer) RegisterNewUser() http.HandlerFunc {
-	type SignupBody struct {
-		EmailID  string `json:"email_id"`
-		Password string `json:"password"`
-	}
-	fmt.Println("It should run only once: ")
+
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		user := new(SignupBody)
@@ -52,6 +54,12 @@ func (s *httpServer) RegisterNewUser() http.HandlerFunc {
 			http.Error(w, e.Error(), http.StatusBadRequest)
 			return
 		}
+		if !signup.IsValidEmail(user.EmailID) {
+			err := fmt.Errorf("Invalid input email")
+			log.Println(err)
+			http.Error(w, err.Error(), 404)
+		}
+
 		token, err := s.DB.AddUser(user.EmailID, user.Password)
 		if err != nil {
 			log.Println(err)
@@ -83,11 +91,18 @@ func (s *httpServer) Verify() http.HandlerFunc {
 		log.Println(email, token)
 		t, err := s.DB.FetchToken(email)
 		if err != nil {
+			err := fmt.Errorf("Email ID %s does not exist", email)
+			log.Println(err)
 			http.Error(w, err.Error(), 500)
 			return
 		}
+		log.Println(t, t)
 		if token == t {
 			log.Println("Verified")
+			if err := s.DB.UpdateValidity(email); err != nil {
+				er := fmt.Errorf("Failed to update the validity %s", err.Error())
+				log.Println(er)
+			}
 			w.Write([]byte("Successfully Verified."))
 			return
 		}
@@ -96,11 +111,30 @@ func (s *httpServer) Verify() http.HandlerFunc {
 	}
 }
 
+func (s *httpServer) Login() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user := new(SignupBody)
+		if err := json.NewDecoder(r.Body).Decode(user); err != nil {
+			e := fmt.Errorf("Error in parsing payload: %s", err)
+			log.Println(e)
+			http.Error(w, e.Error(), http.StatusBadRequest)
+			return
+		}
+		if !login.IsRegistered(s.DB, user.EmailID, user.Password) {
+			log.Println("User is not registered")
+			http.Error(w, "User is not registerd", 403)
+			return
+		}
+		log.Println("Logged in")
+		w.Write([]byte("Successfully logged in"))
+	}
+}
+
 func main() {
 	s := NewServer()
 	s.Router.HandleFunc("/signup", s.RegisterNewUser()).Methods("POST")
 	s.Router.HandleFunc("/verify", s.Verify()).Methods("GET")
-	//s.router.HandleFunc("/login", login.Login)
+	s.Router.HandleFunc("/login", s.Login()).Methods("POST")
 	log.Fatal(http.ListenAndServe(":8192", s))
 
 }
