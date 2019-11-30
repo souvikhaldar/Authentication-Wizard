@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/go-redis/redis/v7"
 	"github.com/gorilla/mux"
 	"github.com/souvikhaldar/Authentication-Wizard/pkg/db"
 	"github.com/souvikhaldar/Authentication-Wizard/pkg/login"
 	"github.com/souvikhaldar/Authentication-Wizard/pkg/signup"
+	"github.com/souvikhaldar/gomail"
 )
 
 type httpServer struct {
@@ -66,8 +68,17 @@ func (s *httpServer) RegisterNewUser() http.HandlerFunc {
 			http.Error(w, err.Error(), 500)
 			return
 		}
-		fmt.Println("Signup token is: ", token)
-
+		msg := fmt.Sprintln("Signup token is: ", token)
+		log.Println(msg)
+		log.Println(os.Getenv("AW_EMAIL"), os.Getenv("AW_PASSWORD"))
+		e, config := gomail.New(os.Getenv("AW_EMAIL"), os.Getenv("AW_PASSWORD"))
+		if e != nil {
+			fmt.Print(fmt.Errorf("Error in creating config %v", e))
+		}
+		if e := config.SendMail([]string{user.EmailID}, "Verification", fmt.Sprintf("Click on localhost:8192/verify?e=%s&t=%s", user.EmailID, token)); e != nil {
+			fmt.Print(fmt.Errorf("Error in sending mail %v", e))
+		}
+		w.Write([]byte("Please verify your email address" + msg))
 	}
 }
 
