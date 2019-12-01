@@ -25,7 +25,7 @@ export AW_EMAIL=<email>
 1. Clone this repository. `git clone https://github.com/souvikhaldar/Authentication-Wizard.git`  
 2. `cd` into this repository. 
   
-3. `go run main.go`  
+3. `go run server/main.go`  
 
 Server should be now running on port 8192. 
 
