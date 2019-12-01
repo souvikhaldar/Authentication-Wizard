@@ -31,18 +31,17 @@ Server should be now running on port 8192.
 
 
 ## API Documentation  
-**POST Sign up**
-localhost:8192/signup
-Make request to this endpoint to sign up the user. On success, it returns a URL which can be copy pasted on the browser for verification. Also, the same URL is mailed to the provided email address.
-
+**POST Sign up**  
+`localhost:8192/signup`  
+Make request to this endpoint to sign up the user. On success, it returns a URL which can be copy pasted on the browser for verification. Also, the same URL is mailed to the provided email address. 
+```
 HEADERS
-Content-Typeapplication/json
+Content-Type application/json
 BODY raw
 {
 	"email_id": "example@gmail.com",
 	"password": "12345678"
 }
-
 
 Example Request
 Sign up
@@ -53,11 +52,11 @@ curl --location --request POST "localhost:8192/signup" \
 	\"password\": \"12345678\"
 }"
 
-
-**GET Verify**
-localhost:8192/verify?e=example@gmail.com&t=EyrMU
-This endpoint verifies the authenticity of the user who is trying to sign up. The endpoint is the URL which is returned as response to /signup and body of the mail sent to the user.
-
+```   
+**GET Verify**  
+`localhost:8192/verify?e=example@gmail.com&t=EyrMU`  
+This endpoint verifies the authenticity of the user who is trying to sign up. The endpoint is the URL which is returned as response to /signup and body of the mail sent to the user.  
+```
 PARAMS
 example@gmail.com
 tEyrMU
@@ -66,20 +65,23 @@ Example Request
 Verify
 curl --location --request GET "localhost:8192/verify?e=example@gmail.com&t=EyrMU"
 
-
-**POST Log in**
-localhost:8192/login
-This endpoint is used to allowing the registered user to log in, if he/she is successfully registered.
-
+```  
+**POST Log in**  
+`localhost:8192/login`  
+This endpoint is used to allowing the registered user to log in, if he/she is successfully registered.  
+```
 HEADERS
-Content-Typeapplication/json
+Content-Type application/json
 BODY raw
 {
 	"email_id": "example@gmail.com",
 	"password": "12345678"
 }
+```
+**NOTE**
+Postman API Documentation can be found [here](https://documenter.getpostman.com/view/7875071/SWDze13k?version=latest)  
 
-*API Documentation can be found [here](https://documenter.getpostman.com/view/7875071/SWDze13k?version=latest)**  
+Video Demonstration can be found [here](https://youtu.be/dkU-kxDsuw4)  
 
 
 
