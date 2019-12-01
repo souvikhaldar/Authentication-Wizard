@@ -2,8 +2,8 @@
 ## Running the server
 1. `cd server/`  
 2. Setup email sender credentials 
-`export AW_PASSWORD=F@keittillyoumakeit`  
-`export AW_EMAIL=joeymartin367@gmail.com`  
+`export AW_PASSWORD=<password>`  
+`export AW_EMAIL=<email>`  
 3. `go run main.go`  
 
 
