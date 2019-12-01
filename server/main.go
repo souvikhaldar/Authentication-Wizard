@@ -60,9 +60,10 @@ func (s *httpServer) RegisterNewUser() http.HandlerFunc {
 			err := fmt.Errorf("Invalid input email")
 			log.Println(err)
 			http.Error(w, err.Error(), 404)
+			return
 		}
 
-		token, err := s.DB.AddUser(user.EmailID, user.Password)
+		token, err := signup.SignupUser(s.DB, user.EmailID, user.Password)
 		if err != nil {
 			log.Println(err)
 			http.Error(w, err.Error(), 500)
@@ -70,15 +71,19 @@ func (s *httpServer) RegisterNewUser() http.HandlerFunc {
 		}
 		msg := fmt.Sprintln("Signup token is: ", token)
 		log.Println(msg)
-		log.Println(os.Getenv("AW_EMAIL"), os.Getenv("AW_PASSWORD"))
+		log.Println("Sender email and password:", os.Getenv("AW_EMAIL"), os.Getenv("AW_PASSWORD"))
 		e, config := gomail.New(os.Getenv("AW_EMAIL"), os.Getenv("AW_PASSWORD"))
 		if e != nil {
-			fmt.Print(fmt.Errorf("Error in creating config %v", e))
+			fmt.Print(fmt.Errorf("Error in creating email config %v", e))
 		}
-		if e := config.SendMail([]string{user.EmailID}, "Verification", fmt.Sprintf("Click on localhost:8192/verify?e=%s&t=%s", user.EmailID, token)); e != nil {
+
+		emailBody := fmt.Sprintf("Copy paste this URL on browser to verify: localhost:8192/verify?e=%s&t=%s", user.EmailID, token)
+
+		if e := config.SendMail([]string{user.EmailID}, "Verification", emailBody); e != nil {
 			fmt.Print(fmt.Errorf("Error in sending mail %v", e))
 		}
-		w.Write([]byte("Please verify your email address" + msg))
+		w.Header().Set("Content-Type", "json")
+		w.Write([]byte("Please verify your email address: " + msg))
 	}
 }
 
