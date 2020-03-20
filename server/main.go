@@ -98,6 +98,14 @@ func (s *httpServer) RegisterNewUser() http.HandlerFunc {
 		if e := config.SendMail([]string{user.EmailID}, "Verification", emailBody); e != nil {
 			err = fmt.Errorf("Error in sending mail %v", e)
 			log.Println(err)
+			// since there was error in sending mail
+			// hence the user can't sign up
+			// so need to delete the user from db
+			// so that he/she can try again
+			// delete the user details from the db
+			if err := s.DB.DeleteUserDetails(user.EmailID); err != nil {
+				log.Println("Error in deleting user details upon failed verification: ", err)
+			}
 			http.Error(w, err.Error(), 500)
 			return
 		}
