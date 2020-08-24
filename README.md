@@ -1,4 +1,6 @@
 # Authentication Wizard
+*P.S - This repo follows the ideal way to write APIs in golang as taught by Matt Ryer [here](https://pace.dev/blog/2018/05/09/how-I-write-http-services-after-eight-years.html) hence can serve as reference for writing APIs*
+
 **Authentication Wizard** is a a backend system useful for user authentication. It consists the following features:  
 1. The user can sign up as a new user. They are expected to see an email in their inbox.  
 2. The user can click the link/copy and paste the link, in the email to verify the account.  
